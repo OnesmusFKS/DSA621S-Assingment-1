@@ -1,0 +1,79 @@
+syntax = "proto3";
+
+package rental;
+
+service RentalService {
+    // Simple RPCs
+    rpc add_property (Property) returns (PropertyResponse);
+    rpc update_property (Property) returns (PropertyResponse);
+    rpc remove_property (PropertyIdRequest) returns (PropertyList);
+    rpc search_property (PropertyIdRequest) returns (PropertyResponse);
+    rpc book_property (BookingRequest) returns (BookingCartResponse);
+    rpc confirm_booking (ConfirmBookingRequest) returns (BookingConfirmation);
+
+    // Client streaming - many users streamed in, one confirmation back
+    rpc create_users (stream User) returns (UserCreationResponse);
+
+    // Server streaming - one request, many properties streamed back
+    rpc list_available_properties (PropertyFilter) returns (stream Property);
+}
+
+message User {
+    string user_id = 1;
+    string name = 2;
+    string role = 3; // HOST or GUEST
+}
+
+message UserCreationResponse {
+    int32 count = 1;
+    string message = 2;
+}
+
+message Property {
+    string property_id = 1; // set by server on add_property; used as key elsewhere
+    string property_name = 2;
+    string location = 3;
+    string property_type = 4;
+    double price_per_night = 5;
+    string status = 6; // AVAILABLE, UNAVAILABLE
+}
+
+message PropertyResponse {
+    Property property = 1;
+    string message = 2;
+}
+
+message PropertyIdRequest {
+    string property_id = 1;
+}
+
+message PropertyList {
+    repeated Property properties = 1;
+}
+
+message PropertyFilter {
+    string location = 1;    // optional filter, empty string = no filter
+    double max_price = 2;   // optional filter, 0 = no filter
+}
+
+message BookingRequest {
+    string property_id = 1;
+    string guest_id = 2;
+    string check_in = 3;  // e.g. "2026-09-10"
+    string check_out = 4;
+}
+
+message BookingCartResponse {
+    string booking_id = 1;
+    string status = 2; // PENDING
+}
+
+message ConfirmBookingRequest {
+    string booking_id = 1;
+}
+
+message BookingConfirmation {
+    string booking_id = 1;
+    double total_cost = 2;
+    string status = 3; // CONFIRMED or REJECTED
+}
