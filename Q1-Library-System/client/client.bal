@@ -29,6 +29,8 @@ public function main() returns error? {
 
 function loanOrBookAsset() returns error? {
     // TODO: PUT the asset's status to LOANED_OUT/OCCUPIED via assetClient
+    int assetTag = check io:readln("Enter asset tag: ").toInt();
+    // TODO: Implement the loan/book logic
 }
 
 function viewAllAssets() returns error? {
