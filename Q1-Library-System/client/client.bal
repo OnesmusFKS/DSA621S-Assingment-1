@@ -28,9 +28,13 @@ public function main() returns error? {
 }
 
 function loanOrBookAsset() returns error? {
-    // TODO: PUT the asset's status to LOANED_OUT/OCCUPIED via assetClient
-    int assetTag = check io:readln("Enter asset tag: ").toInt();
-    // TODO: Implement the loan/book logic
+    string assetTAG  = io:readln("Please enter the asset tag ;");
+    json|http:ClientError current = assetClient->get("/" + assetTAG);
+      if current is http:ClientError {
+        io:println ("the asset was not found ");
+        return ;
+      }
+
 }
 
 function viewAllAssets() returns error? {
