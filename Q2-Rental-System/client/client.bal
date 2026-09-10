@@ -1,4 +1,3 @@
-import ballerina/grpc;
 import ballerina/io;
 
 // NOTE: RentalServiceClient is generated from rental.proto - adjust the
