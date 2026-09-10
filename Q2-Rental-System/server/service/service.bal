@@ -18,6 +18,14 @@ map<User> users = {};            // keyed by user_id
 int propertyCounter = 0;
 int bookingCounter = 0;
 
+function datesOverlap(
+    string firstCheckIn,string firstCheckOut,
+    string secondCheckIn,
+    string secondCheckOut
+) returns boolean {
+    return firstCheckIn < secondCheckOut && secondCheckIn < firstCheckOut;
+}
+
 @grpc:Descriptor {value: RENTAL_DESC}
 service "RentalService" on new grpc:Listener(9090) {
 
@@ -95,23 +103,66 @@ service "RentalService" on new grpc:Listener(9090) {
     }
 
     remote function confirm_booking(ConfirmBookingRequest value) returns BookingConfirmation|error {
-        // TODO:
-        // 1. verify no date overlap with confirmedBookings for this property
-        // 2. calculate total_cost = price_per_night * nights
-        // 3. move from bookingCart to confirmedBookings, return confirmation
+        Booking? pending = bookingCart[value.booking_id];
+        if pending is () {
+            return error("Booking not found: "+ value.booking_id);
+        }
+
+
+        // Reect if property is already confirmed
+        foreach Booking existing in confirmedBookings {
+            if existing.property_id == pending.property_id && datesOverlap(pending.check_in, pending.check_out, existing.check_in, existing.check_out) {
+                return {
+                    booking_id: value.booking_id,
+                    total_cost: 0.0,
+                    status: "REJECTED",
+                    message: "Booking rejected due to date overlap with existing confirmed booking."
+                };
+            }
+        }
+
+        Property? property = properties[pending.property_id];
+        if property is(){
+            return error("Property "+ pending.property_id + " no longer exists");
+        }
+
+        int nights = check calculateNights(pending.check_in, pending.check_out);
+        decimal totalCost = <decimal>nights * <decimal>property.price_per_night;
+
+        Booking confirmed = pending;
+        confirmed.total_cost = totalCost;
+        confirmed.status = "CONFIRMED";
+        confirmedBookings[value.booking_id] = confirmed;
+        _ = bookingCart.remove(value.booking_id);
+
+        return {booking_id: value.booking_id, total_cost: totalCost, status: "CONFIRMED", message: "Booking confirmed successfully."};
+
+
     }
 
     // --- Client streaming ---
 
     remote function create_users(stream<User, grpc:Error?> clientStream) returns UserCreationResponse|error {
-        // TODO: iterate clientStream, store each User in `users`, count them,
-        // return one UserCreationResponse once the stream ends
+        int count = 0;
+        check from User u in clientStream
+        do{
+            users[u.user_id] = u;
+            count += 1;
+        }
+        return {count: count, message: "Registered "+count.toString()+" users successfully."};
     }
 
     // --- Server streaming ---
 
     remote function list_available_properties(RentalServiceListAvailablePropertiesCaller caller, PropertyFilter value) returns error? {
-        // TODO: foreach property in `properties` matching the filter,
-        // check caller->sendProperty(p); then check caller->complete();
+        foreach Property p in properties {
+            boolean matchesLocation = value.location == "" || p.location == value.location;
+            boolean matchesPrice = value.max_price == 0.0 || p.price_per_night <= value.max_price;
+            if (matchesLocation && matchesPrice && p.status == "AVAILABLE") {
+                check caller->sendProperty(p);
+            }
+        }
+
+        check caller->complete();
     }
 }
