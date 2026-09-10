@@ -1,0 +1,60 @@
+{
+  "last_build_time": 1789032866865,
+  "last_update_time": 1789032866865,
+  "last_bal_toml_update_time": 1789022328013,
+  "distribution_version": "2201.13.5",
+  "last_modified_time": {
+    "service": 1789032845558
+  },
+  "last_build_options": {
+    "compilationOptions": {
+      "observabilityIncluded": true,
+      "dumpBir": false,
+      "cloud": "",
+      "dumpGraph": false,
+      "dumpRawGraphs": false
+    }
+  },
+  "src_meta_info": [
+    {
+      "file": "C:\\Users\\ONESMUS\\OneDrive - NUST\\Desktop\\DSA porject\\DSA621S-Assingment-1\\Q2-Rental-System\\server\\service\\Ballerina.toml",
+      "hash": "0b871dc33f339564d320baf4a4922c7972c1ccb95742149de3a55b531adfb0fc",
+      "size": 134,
+      "lastModifiedTime": 1789022328013
+    },
+    {
+      "file": "C:\\Users\\ONESMUS\\OneDrive - NUST\\Desktop\\DSA porject\\DSA621S-Assingment-1\\Q2-Rental-System\\server\\service\\rental_pb.bal",
+      "hash": "353b01ca52d8e77cdba78bc02f4654a3fedf850fb518571192a323b58e76ad2e",
+      "size": 24811,
+      "lastModifiedTime": 1789032632652
+    },
+    {
+      "file": "C:\\Users\\ONESMUS\\OneDrive - NUST\\Desktop\\DSA porject\\DSA621S-Assingment-1\\Q2-Rental-System\\server\\service\\service.bal",
+      "hash": "871f13337259c870f2d07103e2787ec80c963b05793cfab74d8708bfbf65f6f9",
+      "size": 5762,
+      "lastModifiedTime": 1789032845558
+    }
+  ],
+  "target_exec_meta_info": {
+    "file": "C:\\Users\\ONESMUS\\OneDrive - NUST\\Desktop\\DSA porject\\DSA621S-Assingment-1\\Q2-Rental-System\\server\\service\\target\\backup\\bin\\service.jar",
+    "hash": "92101ae1278c3499644410157c7c9abc10c3107d2e934fdf5a444173367d78fa",
+    "size": 44198143,
+    "lastModifiedTime": 1789032873453
+  },
+  "settings_meta_info": {
+    "file": "C:\\Users\\ONESMUS\\.ballerina\\Settings.toml",
+    "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "size": 0,
+    "lastModifiedTime": 1785878769056
+  },
+  "ballerina_toml_meta_info": {
+    "file": "C:\\Users\\ONESMUS\\OneDrive - NUST\\Desktop\\DSA porject\\DSA621S-Assingment-1\\Q2-Rental-System\\server\\service\\Ballerina.toml",
+    "hash": "0b871dc33f339564d320baf4a4922c7972c1ccb95742149de3a55b531adfb0fc",
+    "size": 134,
+    "lastModifiedTime": 1789022328013
+  },
+  "imports": [
+    "ballerina/protobuf",
+    "ballerina/grpc"
+  ]
+}
