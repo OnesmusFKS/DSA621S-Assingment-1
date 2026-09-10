@@ -28,8 +28,32 @@ public function main() returns error? {
 }
 
 function loanOrBookAsset() returns error? {
-    // TODO: PUT the asset's status to LOANED_OUT/OCCUPIED via assetClient
+    string assetTag = io:readln("Please enter the asset tag: ");
+
+    json|http:ClientError current = assetClient->get("/" + assetTag);
+    if current is http:ClientError {
+        io:println("The asset was not found.");
+        return;
+    }
+
+    map<json> asset = <map<json>>current;
+    string status = check asset["status"].ensureType(string);
+
+    if status != "AVAILABLE" {
+        io:println("Asset is currently: " + status + " — cannot loan/book.");
+        return;
+    }
+
+    asset["status"] = "LOANED_OUT";
+
+    json|http:ClientError updateResult = assetClient->put("/" + assetTag, asset);
+    if updateResult is http:ClientError {
+        io:println("The update failed: ", updateResult.message());
+    } else {
+        io:println("The loan was successful.");
+    }
 }
+
 
 function viewAllAssets() returns error? {
     // TODO: GET / and print the list
