@@ -34,8 +34,23 @@ function loanOrBookAsset() returns error? {
         io:println ("the asset was not found ");
         return ;
       }
+          map<json> asset = <map<json>>check current;
+    string status = check asset.status;
 
+    if status != "AVAILABLE" {
+        io:println("Asset is currently: " + status + " — cannot loan/book.");
+        return;
+    }
+
+    asset["status"] = "Its loaned out "; 
+    json|http:ClientError updateResult = assetClient->put("/" + assetTag, asset);
+    if updateResult is http:ClientError {
+        io:println("the update had failed : ", updateResult.message());
+    } else {
+        io:println("the loan was succesfull ");
+    }
 }
+
 
 function viewAllAssets() returns error? {
     // TODO: GET / and print the list
