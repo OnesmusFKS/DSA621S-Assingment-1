@@ -28,26 +28,29 @@ public function main() returns error? {
 }
 
 function loanOrBookAsset() returns error? {
-    string assetTAG  = io:readln("Please enter the asset tag ;");
-    json|http:ClientError current = assetClient->get("/" + assetTAG);
-      if current is http:ClientError {
-        io:println ("the asset was not found ");
-        return ;
-      }
-          map<json> asset = <map<json>>check current;
-    string status = check asset.status;
+    string assetTag = io:readln("Please enter the asset tag: ");
+
+    json|http:ClientError current = assetClient->get("/" + assetTag);
+    if current is http:ClientError {
+        io:println("The asset was not found.");
+        return;
+    }
+
+    map<json> asset = <map<json>>current;
+    string status = check asset["status"].ensureType(string);
 
     if status != "AVAILABLE" {
         io:println("Asset is currently: " + status + " — cannot loan/book.");
         return;
     }
 
-    asset["status"] = "Its loaned out "; 
+    asset["status"] = "LOANED_OUT";
+
     json|http:ClientError updateResult = assetClient->put("/" + assetTag, asset);
     if updateResult is http:ClientError {
-        io:println("the update had failed : ", updateResult.message());
+        io:println("The update failed: ", updateResult.message());
     } else {
-        io:println("the loan was succesfull ");
+        io:println("The loan was successful.");
     }
 }
 
