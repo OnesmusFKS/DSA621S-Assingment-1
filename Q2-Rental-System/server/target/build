@@ -1,0 +1,66 @@
+{
+  "last_build_time": 1789059055674,
+  "last_update_time": 1789059055674,
+  "last_bal_toml_update_time": 1789029600397,
+  "distribution_version": "2201.13.5",
+  "last_modified_time": {
+    "server": 1789058910208
+  },
+  "last_build_options": {
+    "compilationOptions": {
+      "observabilityIncluded": true,
+      "dumpBir": false,
+      "cloud": "",
+      "dumpGraph": false,
+      "dumpRawGraphs": false
+    }
+  },
+  "src_meta_info": [
+    {
+      "file": "C:\\Users\\USER\\Desktop\\Projects\\DSA621S-Assingment-1\\Q2-Rental-System\\server\\Ballerina.toml",
+      "hash": "8a7f3898d04adf749518209bf077481fdc4b364d504e7c5daa2539b0a4d55415",
+      "size": 130,
+      "lastModifiedTime": 1789029600397
+    },
+    {
+      "file": "C:\\Users\\USER\\Desktop\\Projects\\DSA621S-Assingment-1\\Q2-Rental-System\\server\\models.bal",
+      "hash": "36d6dc958a2825b3485d1df3b83d09399cfed278616aad74c1f46b4235a4c52f",
+      "size": 429,
+      "lastModifiedTime": 1788953911549
+    },
+    {
+      "file": "C:\\Users\\USER\\Desktop\\Projects\\DSA621S-Assingment-1\\Q2-Rental-System\\server\\rental_pb.bal",
+      "hash": "353b01ca52d8e77cdba78bc02f4654a3fedf850fb518571192a323b58e76ad2e",
+      "size": 24811,
+      "lastModifiedTime": 1788998013560
+    },
+    {
+      "file": "C:\\Users\\USER\\Desktop\\Projects\\DSA621S-Assingment-1\\Q2-Rental-System\\server\\service.bal",
+      "hash": "5b25f7820ec277bda44fea49163e3bd73cd00463f2a858e72185da7e73684e95",
+      "size": 2396,
+      "lastModifiedTime": 1789058910208
+    }
+  ],
+  "target_exec_meta_info": {
+    "file": "C:\\Users\\USER\\Desktop\\Projects\\DSA621S-Assingment-1\\Q2-Rental-System\\server\\target\\backup\\bin\\server.jar",
+    "hash": "ed65311a743889f5eee335fe93314b5e9837a23664ded7871758d84c4449c9ff",
+    "size": 44150450,
+    "lastModifiedTime": 1789059066620
+  },
+  "settings_meta_info": {
+    "file": "C:\\Users\\USER\\.ballerina\\Settings.toml",
+    "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "size": 0,
+    "lastModifiedTime": 1786461951352
+  },
+  "ballerina_toml_meta_info": {
+    "file": "C:\\Users\\USER\\Desktop\\Projects\\DSA621S-Assingment-1\\Q2-Rental-System\\server\\Ballerina.toml",
+    "hash": "8a7f3898d04adf749518209bf077481fdc4b364d504e7c5daa2539b0a4d55415",
+    "size": 130,
+    "lastModifiedTime": 1789029600397
+  },
+  "imports": [
+    "ballerina/protobuf",
+    "ballerina/grpc"
+  ]
+}
