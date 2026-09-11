@@ -1,6 +1,11 @@
 // Data models for the Library & Resource Management System (Q1).
 // These mirror the example payload in the assignment brief.
 
+# Description.
+#
+# + compId - field description  
+# + name - field description  
+# + description - field description
 public type Component record {
     string compId;
     string name;
@@ -39,3 +44,7 @@ public type Asset record {
     Schedule[] schedules = [];
     WorkOrder[] workOrders = [];
 };
+
+ 
+// In-memory store, keyed by assetTag (the assignment's required unique key)
+ final map<Asset> assets = {};
