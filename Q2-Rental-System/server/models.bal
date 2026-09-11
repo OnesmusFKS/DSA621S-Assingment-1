@@ -8,6 +8,6 @@ public type Booking record {
     string guestId;
     string checkIn;
     string checkOut;
-    decimal totalCost = 0;
+    float totalCost = 0;
     string status; // PENDING, CONFIRMED, REJECTED
 };
