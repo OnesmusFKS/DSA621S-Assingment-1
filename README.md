@@ -9,8 +9,8 @@ DSA612S-Assignment1/
 │   ├── client/      -> client.bal                (Octa)
 │   └── tests/
 ├── Q2-Rental-System/
-│   ├── proto/       -> rental.proto              (Onesmus)
-│   ├── server/      -> models.bal, service.bal   (Lavinia, Manfred, Onesmus)
+│   ├── proto/       -> rental.proto              (Lavinia, Manfred)
+│   ├── server/      -> models.bal, service.bal   (Onesmus)
 │   ├── client/      -> client.bal                (Johannes)
 │   └── tests/
 └── documentation/
