@@ -56,7 +56,30 @@ function loanOrBookAsset() returns error? {
 
 
 function viewAllAssets() returns error? {
-    // TODO: GET / and print the list
+    json|http:ClientError response = assetClient->get("/");
+    
+    if response is http:ClientError {
+        io:println("Could not fetch assets: ", response.message());
+        return;
+    }
+
+    json[] assets = <json[]>response;
+    
+    if assets.length() == 0 {
+        io:println("No assets found in the system.");
+        return;
+    }
+
+    io:println("\n--- ALL ASSETS ---");
+    foreach json item in assets {
+    map<json> assetMap = <map<json>>item;
+    string tag = check assetMap["assetTag"].ensureType(string);
+    string name = check assetMap["name"].ensureType(string);
+    string institution = check assetMap["institution"].ensureType(string);
+    string site = check assetMap["site"].ensureType(string);
+    string status = check assetMap["status"].ensureType(string);
+    string dateAcquired = check assetMap["dateAcquired"].ensureType(string);
+    io:println(string `[${tag}] ${name} | ${institution} - ${site} | Status: ${status} | Acquired: ${dateAcquired}`);
 }
 
 function filterByCampus() returns error? {
