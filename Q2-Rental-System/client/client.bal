@@ -1,4 +1,3 @@
-import ballerina/grpc;
 import ballerina/io;
 
 // NOTE: RentalServiceClient is generated from rental.proto - adjust the
@@ -41,24 +40,19 @@ function addProperty(RentalServiceClient rentalClient) returns error? {
     io:println("Enter property details:");
 
     string propertyName = io:readln("Enter property name: ");
-    string propertyAddress = io:readln("Enter property address: ");
     float pricePerNight = check float:fromString(io:readln("Enter property price: "));
-    string proprtyLocation = io:readln("Enter property location: ");
+    string propertyLocation = io:readln("Enter property location: ");
     string propertyType = io:readln("Enter property type: ");
 
-   
+    Property property = {
+        property_name: propertyName,
+        location: propertyLocation,
+        property_type: propertyType,
+        price_per_night: pricePerNight
+    };
 
-    Property property =
-        {
-            name: propertyName,
-            address: propertyAddress,
-            price: pricePerNight,
-            property_type: propertyType,
-            location: proprtyLocation
-        };
-
-        PropertyResponse response = check rentalClient->add_property(property);
-    io:println("Property added successfully. Assigned ID: " + response.id);
+    PropertyResponse response = check rentalClient->add_property(property);
+    io:println("Property added successfully: " + response.message);
 }
 
 function updateProperty(RentalServiceClient rentalClient) returns error? {
@@ -66,36 +60,38 @@ function updateProperty(RentalServiceClient rentalClient) returns error? {
     string propertyId = io:readln("Enter property ID to update: ");
 
     string propertyName = io:readln("Enter new property name: ");
-    string propertyAddress = io:readln("Enter new property address: ");
     float pricePerNight = check float:fromString(io:readln("Enter new property price: "));
-    string proprtyLocation = io:readln("Enter new property location: ");
+    string propertyLocation = io:readln("Enter new property location: ");
     string propertyType = io:readln("Enter new property type: ");
 
-    Property property =
-       
-        {
-             propertyId: propertyId,
-            name: propertyName,
-            address: propertyAddress,
-            price: pricePerNight,
-            property_type: propertyType,
-            location: proprtyLocation
-        };
+    Property property = {
+        property_id: propertyId,
+        property_name: propertyName,
+        location: propertyLocation,
+        property_type: propertyType,
+        price_per_night: pricePerNight
+    };
 
-        PropertyResponse response = check rentalClient->update_property(property);
-    io:println("Property updated successfully.");
+    PropertyResponse response = check rentalClient->update_property(property);
+    io:println("Property updated successfully: " + response.message);
 }
 
 function removeProperty(RentalServiceClient rentalClient) returns error? {
     // TODO: prompt for property_id, call remove_property
-  string propertyId = io:readln("Enter property ID to remove: ");
-    check rentalClient->remove_property(propertyId);
+        string propertyId = io:readln("Enter property ID to remove: ");
+        _ = check rentalClient->remove_property({
+                property_id: propertyId
+        });
     io:println("Property removed successfully.");  
 }
 
 function listAvailableProperties(RentalServiceClient rentalClient) returns error? {
     // TODO: call list_available_properties, get back a stream, iterate + print
-    stream<Property,grpc:Error?> properties = rentalClient->list_available_properties();
+    PropertyFilter filter = {
+        location: io:readln("Enter location filter (or press Enter for any): "),
+        max_price: check float:fromString(io:readln("Enter maximum price: "))
+    };
+    _ = check rentalClient->list_available_properties(filter);
     do {
         io:println("property"); 
     }
@@ -104,8 +100,10 @@ function listAvailableProperties(RentalServiceClient rentalClient) returns error
 function searchProperty(RentalServiceClient rentalClient) returns error? {
     // TODO: prompt for property_id, call search_property
     string propertyId = io:readln("Enter property ID to search: ");
-    var property = check rentalClient->search_property(propertyId);
-    io:println("Found property: " + property.name);
+    PropertyResponse response = check rentalClient->search_property({
+        property_id: propertyId
+    });
+    io:println("Found property: " + response.property.property_name);
 
 }
 
@@ -117,7 +115,7 @@ function bookProperty(RentalServiceClient rentalClient) returns error? {
     string checkOut = io:readln("Enter check-out date (YYYY-MM-DD): ");
     
 
-  BookingResponse response = 
+        BookingRequest request =
         {
             property_id: propertyID,
             guest_id: guestID,
@@ -125,8 +123,8 @@ function bookProperty(RentalServiceClient rentalClient) returns error? {
             check_out: checkOut
         };
 
-        BookingResponse bookingResponse = check rentalClient->book_property(response);
-    io:println("Property booked successfully.");
+    BookingCartResponse bookingResponse = check rentalClient->book_property(request);
+    io:println("Property booked successfully. Booking ID: " + bookingResponse.booking_id);
 }
 
 function confirmBooking(RentalServiceClient rentalClient) returns error? {
@@ -134,17 +132,16 @@ function confirmBooking(RentalServiceClient rentalClient) returns error? {
     string bookingID = io:readln("Enter booking ID to confirm: ");
 
     
-    BookingConfirmation response = 
+    ConfirmBookingRequest request =
         {
-        booking_id: bookingId
+        booking_id: bookingID
     };
 
-    BookingConfirmation confirmationResponse = check rentalClient->confirm_booking(response);
+    BookingConfirmation confirmationResponse = check rentalClient->confirm_booking(request);
 
     io:println("Booking ID: " + confirmationResponse.booking_id);
     io:println("Total cost: " + confirmationResponse.total_cost.toString());
     io:println("Status: " + confirmationResponse.status);
-    io:println("Message: " + confirmationResponse.message);
 }
 
 
@@ -155,7 +152,7 @@ function createUsers(RentalServiceClient rentalClient) returns error? {
  string userRole = io:readln("Enter user role: ");
 
  User user = {
-        id: userID,
+        user_id: userID,
         name: userName,
         role: userRole
     };
@@ -166,8 +163,11 @@ function createUsers(RentalServiceClient rentalClient) returns error? {
 
     check usersClient->complete();
 
-    UserCreationResponse response = check usersClient->recieveUserCreationResponse();
-
-    io:println("User creation response: " + response.message);
+    UserCreationResponse|() response = check usersClient->receiveUserCreationResponse();
+    if response is UserCreationResponse {
+        io:println("User creation response: " + response.message);
+    } else {
+        io:println("No user creation response received.");
+    }
 } 
 
