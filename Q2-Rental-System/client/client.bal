@@ -1,4 +1,3 @@
-import ballerina/grpc;
 import ballerina/io;
 
 // NOTE: RentalServiceClient is generated from rental.proto - adjust the
@@ -37,7 +36,8 @@ public function main() returns error? {
 }
 
 function addProperty(RentalServiceClient rentalClient) returns error? {
-    // TODO: prompt for property details, call rentalClient->add_property(...)
+    // TODO: prompt for property details, call rentalClient->add_property
+    int propertyId = 0; // Replace with actual input
 }
 
 function updateProperty(RentalServiceClient rentalClient) returns error? {

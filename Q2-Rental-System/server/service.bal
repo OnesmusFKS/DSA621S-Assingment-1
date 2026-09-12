@@ -247,26 +247,13 @@ remote function confirm_booking(ConfirmBookingRequest value)
     // --- Client streaming ---
 
     remote function create_users(stream<User, grpc:Error?> clientStream) returns UserCreationResponse|error {
-        int count = 0;
-        check from User u in clientStream
-        do{
-            users[u.user_id] = u;
-            count += 1;
-        };
-        return {count: count, message: "Registered "+count.toString()+" users successfully."};
+        return error("not implemented yet");
     }
 
     // --- Server streaming ---
 
     remote function list_available_properties(RentalServicePropertyCaller caller, PropertyFilter value) returns error? {
-        foreach Property p in properties {
-            boolean matchesLocation = value.location == "" || p.location == value.location;
-            boolean matchesPrice = value.max_price == 0.0 || p.price_per_night <= value.max_price;
-            if (matchesLocation && matchesPrice && p.status == "AVAILABLE") {
-                check caller->sendProperty(p);
-            }
-        }
-
-        check caller->complete();
-    }
+    // TODO: foreach property in `properties` matching the filter,
+    // check caller->sendProperty(p); then check caller->complete();
+}
 }
