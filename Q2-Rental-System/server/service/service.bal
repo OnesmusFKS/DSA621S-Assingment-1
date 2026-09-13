@@ -1,4 +1,5 @@
 import ballerina/grpc;
+import ballerina/time;
 
 public type Booking record {| 
     string booking_id;
@@ -6,7 +7,7 @@ public type Booking record {|
     string guest_id;
     string check_in;
     string check_out;
-    float total_cost = 0.0;
+    decimal total_cost = 0.0;
     string status = "PENDING";
 |};
 
@@ -24,6 +25,20 @@ function datesOverlap(
     string secondCheckOut
 ) returns boolean {
     return firstCheckIn < secondCheckOut && secondCheckIn < firstCheckOut;
+}
+
+function calculateNights(string checkIn, string checkOut) returns int|error {
+    time:Utc startTime = check time:utcFromString(checkIn + "T00:00:00Z");
+    time:Utc endTime = check time:utcFromString(checkOut + "T00:00:00Z");
+
+    int seconds = endTime[0] - startTime[0];
+    int nights = seconds / 86400;
+
+    if nights <= 0 {
+        return error("Check-out must be after check-in");
+    }
+
+    return nights;
 }
 
 @grpc:Descriptor {value: RENTAL_DESC}
@@ -148,13 +163,13 @@ service "RentalService" on new grpc:Listener(9090) {
         do{
             users[u.user_id] = u;
             count += 1;
-        }
+        };
         return {count: count, message: "Registered "+count.toString()+" users successfully."};
     }
 
     // --- Server streaming ---
 
-    remote function list_available_properties(RentalServiceListAvailablePropertiesCaller caller, PropertyFilter value) returns error? {
+    remote function list_available_properties(RentalServicePropertyCaller caller, PropertyFilter value) returns error? {
         foreach Property p in properties {
             boolean matchesLocation = value.location == "" || p.location == value.location;
             boolean matchesPrice = value.max_price == 0.0 || p.price_per_night <= value.max_price;

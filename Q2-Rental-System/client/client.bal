@@ -36,7 +36,6 @@ public function main() returns error? {
 }
 
 function addProperty(RentalServiceClient rentalClient) returns error? {
-    // TODO: prompt for property details, call rentalClient->add_property
     io:println("Enter property details:");
 
     string propertyName = io:readln("Enter property name: ");
@@ -56,7 +55,6 @@ function addProperty(RentalServiceClient rentalClient) returns error? {
 }
 
 function updateProperty(RentalServiceClient rentalClient) returns error? {
-    // TODO: prompt for property_id + new values, call update_property
     string propertyId = io:readln("Enter property ID to update: ");
 
     string propertyName = io:readln("Enter new property name: ");
@@ -77,7 +75,6 @@ function updateProperty(RentalServiceClient rentalClient) returns error? {
 }
 
 function removeProperty(RentalServiceClient rentalClient) returns error? {
-    // TODO: prompt for property_id, call remove_property
         string propertyId = io:readln("Enter property ID to remove: ");
         _ = check rentalClient->remove_property({
                 property_id: propertyId
@@ -86,7 +83,6 @@ function removeProperty(RentalServiceClient rentalClient) returns error? {
 }
 
 function listAvailableProperties(RentalServiceClient rentalClient) returns error? {
-    // TODO: call list_available_properties, get back a stream, iterate + print
     PropertyFilter filter = {
         location: io:readln("Enter location filter (or press Enter for any): "),
         max_price: check float:fromString(io:readln("Enter maximum price: "))
@@ -98,7 +94,6 @@ function listAvailableProperties(RentalServiceClient rentalClient) returns error
 }
 
 function searchProperty(RentalServiceClient rentalClient) returns error? {
-    // TODO: prompt for property_id, call search_property
     string propertyId = io:readln("Enter property ID to search: ");
     PropertyResponse response = check rentalClient->search_property({
         property_id: propertyId
@@ -108,7 +103,6 @@ function searchProperty(RentalServiceClient rentalClient) returns error? {
 }
 
 function bookProperty(RentalServiceClient rentalClient) returns error? {
-    // TODO: prompt for property_id/guest_id/dates, call book_property
     string propertyID = io:readln("Enter property ID to book: ");
     string guestID = io:readln("Enter guest ID");
     string checkIn = io:readln("Enter check-in  date (YYYY-MM-DD): ");
@@ -128,7 +122,6 @@ function bookProperty(RentalServiceClient rentalClient) returns error? {
 }
 
 function confirmBooking(RentalServiceClient rentalClient) returns error? {
-    // TODO: prompt for booking_id, call confirm_booking
     string bookingID = io:readln("Enter booking ID to confirm: ");
 
     
@@ -146,7 +139,6 @@ function confirmBooking(RentalServiceClient rentalClient) returns error? {
 
 
 function createUsers(RentalServiceClient rentalClient) returns error? {
-    // TODO: build a stream of User records, call create_users with it
  string userID = io:readln("Enter user ID: ");
  string userName = io:readln("Enter user name: ");
  string userRole = io:readln("Enter user role: ");

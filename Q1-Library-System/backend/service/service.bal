@@ -1,17 +1,56 @@
 import ballerina/http;
 import ballerina/time;
 
+type Component record {
+    string compId;
+    string name;
+    string description;
+};
+
+type Task record {
+    string taskId;
+    string description;
+    boolean completed = false;
+};
+
+type WorkOrder record {
+    string orderId;
+    string status;
+    string description;
+    Task[] tasks = [];
+};
+
+type Schedule record {
+    string scheduleId;
+    string 'type;
+    string dueDate;
+    string description;
+};
+
+type Asset record {|
+    string assetTag;
+    string name;
+    string description;
+    string institution;
+    string site;
+    string status;
+    time:Civil timestamp;
+    Component[] components = [];
+    Schedule[] schedules = [];
+    WorkOrder[] workOrders = [];
+|};
+
+map<Asset> assets = {};
+
 service /assets on new http:Listener(8080) {
 
     // --- Asset Management (CRUD) --- 
 
     resource function get .() returns Asset[] {
-        // TODO: return assets.toArray()
         return assets.toArray();
     }
 
     resource function get [string assetTag]() returns http:NotFound & readonly|Asset? {
-        // TODO: look up by assetTag, return http:NOT_FOUND if missing
         if !assets.hasKey(assetTag) {
             return http:NOT_FOUND;
         }
@@ -30,7 +69,7 @@ service /assets on new http:Listener(8080) {
     }
 
     resource function put [string assetTag](@http:Payload Asset updated) returns Asset|http:NotFound|error {
-        // TODO: update fields, 404 if assetTag not found
+        //update fields, 404 if assetTag not found
         if !assets.hasKey(assetTag) {
             return http:NOT_FOUND; // 404 Not Found
         }
@@ -41,7 +80,7 @@ service /assets on new http:Listener(8080) {
     }
 
     resource function delete [string assetTag]() returns http:Ok|http:NotFound {
-        // TODO: remove from map
+        //remove from map
         if !assets.hasKey(assetTag) {
             return http:NOT_FOUND; // 404 Not Found
         }
@@ -52,14 +91,14 @@ service /assets on new http:Listener(8080) {
     // --- Filtering ---
 
     resource function get institution/[string institution]() returns Asset[] {
-        // TODO: filter assets.toArray() by institution
+        //filter assets.toArray() by institution
         return from Asset asset in assets
                where asset.institution.toLowerAscii() == institution.toLowerAscii()
                select asset;
     }
 
     resource function get site/[string site]() returns Asset[] {
-        // TODO: filter assets.toArray() by site/campus
+        //filter assets.toArray() by site/campus
         return from Asset asset in assets
                where asset.site.toLowerAscii() == site.toLowerAscii()
                select asset;
@@ -68,7 +107,7 @@ service /assets on new http:Listener(8080) {
     // --- Maintenance ---
 
     resource function get maintenance/overdue() returns Asset[] {
-        // TODO: filter schedules where type == MAINTENANCE and dueDate < today
+        //filter schedules where type == MAINTENANCE and dueDate < today
         time:Civil today= time:utcToCivil(time:utcNow());
         string todayStr = string `${today.year}-${today.month < 10 ? "0" : ""}-${today.month}-${today.day < 10 ? "0" : ""}-${today.day}`;   
 
