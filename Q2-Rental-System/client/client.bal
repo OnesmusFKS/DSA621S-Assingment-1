@@ -47,7 +47,8 @@ function addProperty(RentalServiceClient rentalClient) returns error? {
         property_name: propertyName,
         location: propertyLocation,
         property_type: propertyType,
-        price_per_night: pricePerNight
+        price_per_night: pricePerNight,
+        status: "AVAILABLE"
     };
 
     PropertyResponse response = check rentalClient->add_property(property);
@@ -61,13 +62,15 @@ function updateProperty(RentalServiceClient rentalClient) returns error? {
     float pricePerNight = check float:fromString(io:readln("Enter new property price: "));
     string propertyLocation = io:readln("Enter new property location: ");
     string propertyType = io:readln("Enter new property type: ");
+    string propertyStatus = io:readln("Enter property status (AVAILABLE/UNAVAILABLE): ");
 
     Property property = {
         property_id: propertyId,
         property_name: propertyName,
         location: propertyLocation,
         property_type: propertyType,
-        price_per_night: pricePerNight
+        price_per_night: pricePerNight,
+        status: propertyStatus
     };
 
     PropertyResponse response = check rentalClient->update_property(property);
@@ -83,13 +86,30 @@ function removeProperty(RentalServiceClient rentalClient) returns error? {
 }
 
 function listAvailableProperties(RentalServiceClient rentalClient) returns error? {
+    string location = io:readln("Enter location filter (or press Enter for any): ");
+    string maxPriceInput = io:readln("Enter maximum price (or press Enter for any): ");
+    float maxPrice = 0.0;
+    if maxPriceInput.trim() != "" {
+        maxPrice = check float:fromString(maxPriceInput);
+    }
+
     PropertyFilter filter = {
-        location: io:readln("Enter location filter (or press Enter for any): "),
-        max_price: check float:fromString(io:readln("Enter maximum price: "))
+        location: location.trim(),
+        max_price: maxPrice
     };
-    _ = check rentalClient->list_available_properties(filter);
-    do {
-        io:println("property"); 
+    stream<Property, error?> propertyStream = check rentalClient->list_available_properties(filter);
+    boolean found = false;
+    var next = propertyStream.next();
+    while next is record {|Property value;|} {
+        found = true;
+        Property property = next.value;
+        io:println(string `[${property.property_id}] ${property.property_name} | ${property.location} | ${property.property_type} | ${property.price_per_night} per night | ${property.status}`);
+        next = propertyStream.next();
+    }
+    if next is error {
+        io:println("Unable to read available properties: " + next.message());
+    } else if !found {
+        io:println("No available properties matched the selected filters.");
     }
 }
 

@@ -8,24 +8,56 @@ public function main() returns error? {
     boolean running = true;
     while running {
         io:println("\n ---LIBRARY & RESOURCE SYSTEM ---");
-        io:println("1. Loan/Book an asset");
-        io:println("2. View all assets ");
-        io:println("3. Filter by institution or campus");
-        io:println("4. View overdue items");
-        io:println("5. Manage schedules");
-        io:println("6. Exit");
+        io:println("1. Create an asset");
+        io:println("2. Loan/Book an asset");
+        io:println("3. View all assets");
+        io:println("4. Filter by institution or campus");
+        io:println("5. View overdue items");
+        io:println("6. Manage schedules");
+        io:println("7. Exit");
         string choice = io:readln("Choose an option: ");
 
         match choice {
-            "1" => { check loanOrBookAsset(); }
-            "2" => { check viewAllAssets(); }
-            "3" => { check filterByCampus(); }
-            "4" => { check viewOverdue(); }
-            "5" => { check manageSchedule(); }
-            "6" => { running = false; }
+            "1" => { check createAsset(); }
+            "2" => { check loanOrBookAsset(); }
+            "3" => { check viewAllAssets(); }
+            "4" => { check filterByCampus(); }
+            "5" => { check viewOverdue(); }
+            "6" => { check manageSchedule(); }
+            "7" => { running = false; }
             _ => { io:println("Invalid option."); }
         }
     }
+}
+
+function createAsset() returns error? {
+    io:println("\n--- CREATE ASSET ---");
+    string assetTag = io:readln("Asset tag: ");
+    string name = io:readln("Name: ");
+    string description = io:readln("Description: ");
+    string institution = io:readln("Institution: ");
+    string site = io:readln("Site/campus: ");
+    string status = io:readln("Status (AVAILABLE/LOANED_OUT/UNDER_MAINTENANCE/DISPOSED): ");
+    string dateAcquired = io:readln("Date acquired (YYYY-MM-DD): ");
+
+    json payload = {
+        "assetTag": assetTag,
+        "name": name,
+        "description": description,
+        "institution": institution,
+        "site": site,
+        "status": status,
+        "dateAcquired": dateAcquired
+    };
+
+    json|http:ClientError response = assetClient->post("/", payload);
+    if response is http:ClientError {
+        io:println("Could not create asset: " + response.message());
+        return;
+    }
+
+    io:println("Asset created successfully.");
+    io:println(response.toString());
 }
 
 function loanOrBookAsset() returns error? {
@@ -41,7 +73,7 @@ function loanOrBookAsset() returns error? {
     string status = check asset["status"].ensureType(string);
 
     if status != "AVAILABLE" {
-        io:println("Asset is currently: " + status + " — cannot loan/book.");
+        io:println("Asset is currently: " + status + " cannot loan/book.");
         return;
     }
 
@@ -158,11 +190,13 @@ function manageSchedule() returns error? {
 
     match action {
         "1" => {
-            string date = io:readln("Enter schedule date in this order  (YYYY-MM-DD): ");
+            string scheduleId = io:readln("Enter schedule ID: ");
+            string date = io:readln("Enter schedule due-date in this order  (YYYY-MM-DD): ");
             string desc = io:readln("Enter schedule description: ");
             
            
             json payload = { 
+                "scheduleId": scheduleId,
                 "type": "MAINTENANCE",
                 "dueDate": date,
                 "description": desc

@@ -34,7 +34,7 @@ type Asset record {|
     string institution;
     string site;
     string status;
-    time:Civil timestamp;
+    string dateAcquired;
     Component[] components = [];
     Schedule[] schedules = [];
     WorkOrder[] workOrders = [];
@@ -89,7 +89,6 @@ service /assets on new http:Listener(8080) {
     }
 
     // --- Filtering ---
-
     resource function get institution/[string institution]() returns Asset[] {
         //filter assets.toArray() by institution
         return from Asset asset in assets
@@ -109,7 +108,7 @@ service /assets on new http:Listener(8080) {
     resource function get maintenance/overdue() returns Asset[] {
         //filter schedules where type == MAINTENANCE and dueDate < today
         time:Civil today= time:utcToCivil(time:utcNow());
-        string todayStr = string `${today.year}-${today.month < 10 ? "0" : ""}-${today.month}-${today.day < 10 ? "0" : ""}-${today.day}`;   
+        string todayStr = string `${today.year}-${today.month < 10 ? "0" : ""}${today.month}-${today.day < 10 ? "0" : ""}${today.day}`;
 
         return from Asset asset in assets
                where (from Schedule s in asset.schedules

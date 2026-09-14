@@ -102,6 +102,10 @@ service "RentalService" on new grpc:Listener(9090) {
         if (!properties.hasKey(value.property_id)) {
             return error("Property not found: "+ value.property_id);
         }
+        Property? property = properties.get(value.property_id);
+        if property is Property && property.status != "AVAILABLE" {
+            return error("Property is not available for booking: " + value.property_id);
+        }
         bookingCounter += 1;
         string bookingId = "B" + bookingCounter.toString();
 
@@ -171,7 +175,7 @@ service "RentalService" on new grpc:Listener(9090) {
 
     remote function list_available_properties(RentalServicePropertyCaller caller, PropertyFilter value) returns error? {
         foreach Property p in properties {
-            boolean matchesLocation = value.location == "" || p.location == value.location;
+            boolean matchesLocation = value.location.trim() == "" || p.location.toLowerAscii() == value.location.trim().toLowerAscii();
             boolean matchesPrice = value.max_price == 0.0 || p.price_per_night <= value.max_price;
             if (matchesLocation && matchesPrice && p.status == "AVAILABLE") {
                 check caller->sendProperty(p);
