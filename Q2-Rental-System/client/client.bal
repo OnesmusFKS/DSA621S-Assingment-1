@@ -39,7 +39,7 @@ function addProperty(RentalServiceClient rentalClient) returns error? {
     io:println("Enter property details:");
 
     string propertyName = io:readln("Enter property name: ");
-    float pricePerNight = check float:fromString(io:readln("Enter property price: "));
+    float pricePerNight = check float:fromString(io:readln("Enter price per night: "));
     string propertyLocation = io:readln("Enter property location: ");
     string propertyType = io:readln("Enter property type: ");
 
@@ -59,7 +59,7 @@ function updateProperty(RentalServiceClient rentalClient) returns error? {
     string propertyId = io:readln("Enter property ID to update: ");
 
     string propertyName = io:readln("Enter new property name: ");
-    float pricePerNight = check float:fromString(io:readln("Enter new property price: "));
+    float pricePerNight = check float:fromString(io:readln("Enter new price per night: "));
     string propertyLocation = io:readln("Enter new property location: ");
     string propertyType = io:readln("Enter new property type: ");
     string propertyStatus = io:readln("Enter property status (AVAILABLE/UNAVAILABLE): ");
@@ -99,6 +99,7 @@ function listAvailableProperties(RentalServiceClient rentalClient) returns error
     };
     stream<Property, error?> propertyStream = check rentalClient->list_available_properties(filter);
     boolean found = false;
+
     var next = propertyStream.next();
     while next is record {|Property value;|} {
         found = true;
@@ -106,6 +107,7 @@ function listAvailableProperties(RentalServiceClient rentalClient) returns error
         io:println(string `[${property.property_id}] ${property.property_name} | ${property.location} | ${property.property_type} | ${property.price_per_night} per night | ${property.status}`);
         next = propertyStream.next();
     }
+
     if next is error {
         io:println("Unable to read available properties: " + next.message());
     } else if !found {
@@ -124,7 +126,7 @@ function searchProperty(RentalServiceClient rentalClient) returns error? {
 
 function bookProperty(RentalServiceClient rentalClient) returns error? {
     string propertyID = io:readln("Enter property ID to book: ");
-    string guestID = io:readln("Enter guest ID");
+    string guestID = io:readln("Enter guest ID: ");
     string checkIn = io:readln("Enter check-in  date (YYYY-MM-DD): ");
     string checkOut = io:readln("Enter check-out date (YYYY-MM-DD): ");
     

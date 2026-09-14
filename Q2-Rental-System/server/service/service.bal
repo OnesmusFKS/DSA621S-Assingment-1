@@ -7,7 +7,7 @@ public type Booking record {|
     string guest_id;
     string check_in;
     string check_out;
-    decimal total_cost = 0.0;
+    float total_cost = 0.0;
     string status = "PENDING";
 |};
 
@@ -146,7 +146,7 @@ service "RentalService" on new grpc:Listener(9090) {
         }
 
         int nights = check calculateNights(pending.check_in, pending.check_out);
-        decimal totalCost = <decimal>nights * <decimal>property.price_per_night;
+        float totalCost = <float>nights * property.price_per_night;
 
         Booking confirmed = pending;
         confirmed.total_cost = totalCost;

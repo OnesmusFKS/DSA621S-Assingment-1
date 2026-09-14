@@ -588,7 +588,7 @@ public type PropertyIdRequest record {|
 @protobuf:Descriptor {value: RENTAL_DESC}
 public type BookingConfirmation record {|
     string booking_id;
-    decimal total_cost;
+    float total_cost;
     string status;
     string message;
 |};
